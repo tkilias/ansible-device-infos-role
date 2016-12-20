@@ -1,0 +1,13 @@
+- name: "Get filesystems for partitions"
+  shell: "blkid | cut -f 1,3 -d \" \" | grep \"{{ item.1 }}:\" | sed 's/.*TYPE=\"\\(.*\\)\"/\\1/g'"
+  register: filesystems_per_partitions
+  become: true
+  with_subelements:
+    - ansible_devices
+    - partitions_as_list
+
+- name: "Set filesystem as fact for partitions"
+  set_fact:
+    ansible_devices: "{{ ansible_devices | default({}) | combine( {item.item.0.name: { 'partitions': { item.item.1: { 'filesystem': item.stdout } } } }, recursive = true ) }}"
+  when: item.stdout is defined and item.rc == 0
+  with_items: "{{ filesystems_per_partitions.results }}"

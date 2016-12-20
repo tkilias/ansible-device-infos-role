@@ -1,0 +1,19 @@
+
+    # - name: "get filesystems for disks 1"
+    #   set_fact:
+    #     pairs: >
+    #           {% set t1 = [] %}
+    #           {% for dev in ansible_devices %}
+    #             {% for part in ansible_devices[dev].partitions %}
+    #               {% set t1 = t1 + [1] %}
+    #             {%endfor%}
+    #           {%endfor%}
+    #           {{ t1 }}
+          
+    # - name: "debug regex"
+    #   debug:
+    #     # msg: "{{ item | regex_replace('(.*)=(.*)','\\1') }}"
+    #     msg: "{{ item }}"
+    #   with_items: "{{ pairs }}"
+      
+      

@@ -1,2 +1,18 @@
----
-# tasks file for ansible-worker5
+- name: "Save original ansible_devices fact"
+  set_fact:
+    original_ansible_devices: "{{ ansible_devices }}"
+  when: original_ansible_devices is not defined
+
+- name: "Restore original ansible_devices"
+  set_fact:
+    ansible_devices: "{{ original_ansible_devices  }}"
+  when: original_ansible_devices is defined
+
+- name: "Get partition list for devices"
+  include: tasks/get_device_partitions_as_list.yml
+  
+- name: "Include get_id_for_devices.yml"
+  include: tasks/get_id_for_devices.yml
+
+- name: "Include get_filesystem_info.yml"
+  include: tasks/get_filesystem_info.yml

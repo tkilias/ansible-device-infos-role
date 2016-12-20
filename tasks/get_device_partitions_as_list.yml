@@ -1,0 +1,10 @@
+# Produce a list [{device:sda,partitions:{sda1,sda2}},{device:sdb,partitions:{sdb1}},...]
+- name: "Get partition list for devices"
+  set_fact:
+    device_partitions_as_list: "{% set partitions = item.value.partitions | list %}{{ device_partitions_as_list | default([]) + [{'partitions':partitions,'device':item.key}] }}"
+  with_dict: "{{ ansible_devices }}"
+
+- name: "Add partition list for ansible_devices fact"
+  set_fact:
+    ansible_devices: "{{ ansible_devices | default({}) | combine( {item.device: { 'name':item.device,'partitions_as_list': item.partitions }}, recursive=true) }}"
+  with_items: device_partitions_as_list

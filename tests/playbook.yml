@@ -1,0 +1,8 @@
+- hosts: allpurpose-worker
+  gather_facts: True
+  tasks:
+    - name: "Get infos for devices"
+      include: tasks/get_devices_info.yml
+
+    - debug:
+        msg: "{{ ansible_devices }}"

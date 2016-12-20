@@ -1,0 +1,23 @@
+- name: "Get id for devices"
+  shell: "ls -l /dev/disk/by-id/ | awk '{print $9,$11}' | grep '{{ item.key }}$' | cut -f 1 -d ' '"
+  register: disk_id_stdout
+  with_dict: "{{ ansible_devices }}"
+
+- name: "Set id of disk as fact"
+  set_fact: 
+    ansible_devices: "{{ ansible_devices | default({}) | combine( {item.item.key: { 'ids': item.stdout_lines }}, recursive=true) }}"
+  when: item.stdout_lines is defined and item.rc is defined and item.rc==0
+  with_items: "{{ disk_id_stdout.results }}"
+  
+- name: "Get id for partitions"
+  shell: "ls -l /dev/disk/by-id/ | awk '{print $9,$11}' | grep '{{ item.1 }}$' | cut -f 1 -d ' '"
+  register: partitions_id_stdout
+  with_subelements:
+    - "{{ ansible_devices  }}"
+    - partitions_as_list
+
+- name: "Set id of partitions as fact"
+  set_fact: 
+    ansible_devices: "{{ ansible_devices | default({}) | combine( {item.item.0.name: { 'partitions': { item.item.1: { 'ids': item.stdout_lines } } } }, recursive = true ) }}"
+  when: item.stdout_lines is defined and item.rc is defined and item.rc==0
+  with_items: "{{ partitions_id_stdout.results }}"
