@@ -7,4 +7,4 @@
 - name: "Add partition list for ansible_devices fact"
   set_fact:
     ansible_devices: "{{ ansible_devices | default({}) | combine( {item.device: { 'name':item.device,'partitions_as_list': item.partitions }}, recursive=true) }}"
-  with_items: device_partitions_as_list
+  with_items: "{{ device_partitions_as_list }}"

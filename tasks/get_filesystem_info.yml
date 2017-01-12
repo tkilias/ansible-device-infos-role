@@ -3,7 +3,7 @@
   register: filesystems_per_partitions
   become: true
   with_subelements:
-    - ansible_devices
+    - "{{ ansible_devices }}"
     - partitions_as_list
 
 - name: "Set filesystem as fact for partitions"
